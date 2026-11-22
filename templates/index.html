@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Freight Fare Finder</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+
+  <body>
+    <header class="navbar">
+      <div class="logo">Freight<span>Finder</span></div>
+      <p>Smart Transport Price Comparison</p>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <h1>Find the Best Freight Fare</h1>
+        <p>Compare transport estimates and choose an affordable option.</p>
+      </section>
+
+      <section class="form-card">
+        <h2>Enter Transport Details</h2>
+
+        <form action="/" method="POST">
+          <div class="form-group">
+            <label>Pickup Location</label>
+            <input
+              type="text"
+              name="pickup"
+              placeholder="Enter pickup location"
+              value="{{ form_data.pickup }}"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Drop Location</label>
+            <input
+              type="text"
+              name="drop"
+              placeholder="Enter destination"
+              value="{{ form_data.drop }}"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Distance (KM)</label>
+            <input
+              type="number"
+              name="distance"
+              placeholder="Enter distance"
+              step="any"
+              value="{{ form_data.distance }}"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Select Vehicle</label>
+
+            <select name="vehicle" required>
+              <option value="Mini Truck">Mini Truck</option>
+              <option value="Large Truck">Large Truck</option>
+            </select>
+          </div>
+
+          <button type="submit">Compare Freight Fares</button>
+        </form>
+
+        {% if error %}
+        <div class="error-message">{{ error }}</div>
+        {% endif %}
+      </section>
+
+      {% if results %}
+
+      <section class="results-section">
+        <h2>Fare Comparison Results</h2>
+
+        <div class="trip-info">
+          <p>
+            <strong>Route:</strong>
+            {{ results[0].pickup }} → {{ results[0].drop }}
+          </p>
+
+          <p><strong>Vehicle:</strong> {{ vehicle }}</p>
+
+          <p><strong>Distance:</strong> {{ distance }} KM</p>
+        </div>
+
+        <div class="results-grid">
+          {% for provider in results %}
+
+          <div class="result-card">
+            {% if provider.is_cheapest %}
+            <span class="cheapest">LOWEST FARE</span>
+            {% endif %}
+
+            <h3>{{ provider.name }}</h3>
+
+            <p class="fare-label">Estimated Fare</p>
+
+            <h2 class="fare">₹{{ "%.2f"|format(provider.fare) }}</h2>
+
+            <p class="route">{{ provider.pickup }} → {{ provider.drop }}</p>
+          </div>
+
+          {% endfor %}
+        </div>
+
+        <p class="note">
+          Note: These are sample fare estimates, not live provider quotations.
+        </p>
+      </section>
+
+      {% endif %}
+    </main>
+
+    <footer>
+      <p>Freight Fare Finder | Python Flask Project</p>
+    </footer>
+  </body>
+</html>
